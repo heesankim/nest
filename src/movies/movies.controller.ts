@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { Movie } from './entities/movie.entitiy';
@@ -32,7 +33,7 @@ export class MoviesController {
   // url로 보낸 값은 전부 string이다.
   // 그래서 서비스 단계에서 id를 number로 변환해줘야 한다.
   // 하지만 validation pipe에 transform속성을 true로  설정하면 자동으로 엔티티에 맞게 변환해준다.
-  getOne(@Param('id') movieId: number): Movie {
+  getOne(@Param('id') movieId: number): Promise<Movie> {
     return this.moviesService.getOne(movieId);
   }
 
@@ -42,7 +43,7 @@ export class MoviesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') movieId: number): boolean {
+  remove(@Param('id') movieId: number): Promise<boolean> {
     return this.moviesService.deleteOne(movieId);
   }
 
@@ -50,7 +51,12 @@ export class MoviesController {
   patch(
     @Param('id') movieId: number,
     @Body() updateData: UpdateMovieDto,
-  ): Movie {
+  ): Promise<Movie> {
     return this.moviesService.update(movieId, updateData);
+  }
+
+  @Get('search')
+  search(@Query('title') movieTitle: string): Promise<Movie> {
+    return this.moviesService.search(movieTitle);
   }
 }
